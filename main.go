@@ -10,10 +10,10 @@ import (
 	"github.com/fsnotify/fsnotify"
 )
 
-func symlink(filepath string) {
+func symlink(filepath string, path string) {
 	homedir, err := os.UserHomeDir()
 	fmt.Println(homedir + "/.local/share/flatpak/exports/share/applications/" + strings.Split(strings.Replace(filepath, ".flatpakref", ".desktop", 1), "/")[1])
-	cmd := exec.Command("ln", "-s", homedir+"/.local/share/flatpak/exports/share/applications/"+strings.Split(strings.Replace(filepath, ".flatpakref", ".desktop", 1), "/")[1], "./Applications/.")
+	cmd := exec.Command("ln", "-s", homedir+"/.local/share/flatpak/exports/share/applications/"+strings.Split(strings.Replace(filepath, ".flatpakref", ".desktop", 1), "/")[1], path)
 	stdout, err := cmd.Output()
 	if err != nil {
 		fmt.Println(err)
@@ -21,8 +21,8 @@ func symlink(filepath string) {
 	fmt.Println(string(stdout))
 }
 
-func install(filepath string) {
-	cmd := exec.Command("flatpak", "install", "--user", "-y", "./"+filepath)
+func install(filepath string, path string) {
+	cmd := exec.Command("flatpak", "install", "--user", "-y", filepath)
 	stdout, err := cmd.Output()
 	if err != nil {
 		log.Fatal(err)
@@ -30,13 +30,14 @@ func install(filepath string) {
 		if err := os.Remove("./" + filepath); err != nil {
 			log.Fatal(err)
 		}
-		symlink(filepath)
+		symlink(filepath, path)
 	}
 	fmt.Println(string(stdout))
 
 }
 
 func main() {
+	path := os.Getenv("APPLICATIONS_PATH")
 	watcher, err := fsnotify.NewWatcher()
 	if err != nil {
 		log.Fatal(err)
@@ -54,7 +55,7 @@ func main() {
 				if strings.Contains(event.String(), "CREATE") && strings.Contains(event.String(), ".flatpakref") {
 					fmt.Println("event:", event)
 					fmt.Println("filepath:", event.Name)
-					install(event.Name)
+					install(event.Name, path)
 				}
 				if event.Op&fsnotify.Write == fsnotify.Write {
 					fmt.Println("modified file:", event.Name)
@@ -68,7 +69,7 @@ func main() {
 		}
 	}()
 
-	err = watcher.Add("./Applications")
+	err = watcher.Add(path)
 	if err != nil {
 		log.Fatal(err)
 	}
