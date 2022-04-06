@@ -25,7 +25,7 @@ basically, every file manager will support creating the directory and installing
 Every other file manager should work with no issues.
 
 # Roadmap
-[x] Support installing flatpak files <br>
-[] Support removing installed appr <br>
-[] alert user when application finished installing/removing <br>
-[] Support custom Applications directories <br>
+- [x] Support installing flatpak files <br>
+- [] Support removing installed appr <br>
+- [] alert user when application finished installing/removing <br>
+- [] Support custom Applications directories <br>
