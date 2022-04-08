@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"github.com/fsnotify/fsnotify"
+	"github.com/gen2brain/beeep"
 )
 
 func symlink(filepath string, path string) {
@@ -28,15 +29,25 @@ func install(filepath string, path string) {
 		log.Fatal(err)
 	} else {
 		if err := os.Remove("./" + filepath); err != nil {
+
+			beeperr := beeep.Notify("Mac Style Install", strings.Split(strings.Replace(filepath, ".flatpakref", "", 1), "/")[1]+" failed to install!", "assets/notif.png")
+			if beeperr != nil {
+				panic(beeperr)
+			}
 			log.Fatal(err)
 		}
 		symlink(filepath, path)
+		beeperr := beeep.Notify("Mac Style Install", strings.Split(strings.Replace(filepath, ".flatpakref", "", 1), "/")[1]+" installed succesfully", "assets/notif.png")
+		if beeperr != nil {
+			panic(beeperr)
+		}
 	}
 	fmt.Println(string(stdout))
 
 }
 
 func main() {
+
 	path := os.Getenv("APPLICATIONS_PATH")
 	watcher, err := fsnotify.NewWatcher()
 	if err != nil {
