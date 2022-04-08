@@ -28,4 +28,4 @@ Every other file manager should work with no issues.
 - [x] Support installing flatpak files <br>
 - [ ] Support removing installed appr <br>
 - [ ] alert user when application finished installing/removing <br>
-- [ ] Support custom Applications directories <br>
+- [x] Support custom Applications directories <br>
